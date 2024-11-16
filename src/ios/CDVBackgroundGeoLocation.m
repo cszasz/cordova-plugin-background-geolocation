@@ -460,7 +460,7 @@
 
     CLLocation *location = [locations lastObject];
     
-    
+    /*
 
     if (!isMoving && !isAcquiringStationaryLocation && !stationaryLocation) {
         // Perhaps our GPS signal was interupted, re-acquire a stationaryLocation now.
@@ -470,7 +470,7 @@
     // test the age of the location measurement to determine if the measurement is cached
     // in most cases you will not want to rely on cached measurements
     //if ([self locationAge:location] > 5.0) return;
-
+    
     // test that the horizontal accuracy does not indicate an invalid measurement
     if (location.horizontalAccuracy < 0) return;
 
@@ -522,7 +522,9 @@
             [self notify:@"Manual stationary exit-detection"];
         }
         [self setPace:YES];
-    }
+    }*/
+    
+    [self startUpdatingLocation];
     
     [self queue:location type:@"current"];
 }
@@ -804,9 +806,13 @@
     // Check if there's a previous location to calculate the distance
     if (lastLocation2) {
         CLLocationDistance distance = [location distanceFromLocation:lastLocation2];
-        NSLog(@"Distance from last location: %.2f meters", distance);
-        //if (isDebugging)
+        if (distance < distanceFilter) {
+            return;
+        }
+        if (isDebugging) {
+            NSLog(@"Distance from last location: %.2f meters", distance);
             [self notify:[NSString stringWithFormat:@"Location update %.2f meters", distance]];
+        }
     } else {
        NSLog(@"First location update received.");
     }
